@@ -50,9 +50,17 @@ class _PostListScreenState extends State<PostListScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          CupertinoButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                context.read<LoginBloc>().add(Logout());
+              })
+        ],
         title: Text('${user?.firstName ?? ''} ${user?.lastName ?? 'Posts'}'),
       ),
       body: BlocListener<LoginBloc, LoginState>(
+        // listenWhen: (previous, current) => current is LoginUnauthenticated,
         listener: (context, state) {
           if (state is LoginUnauthenticated) {
             ScaffoldMessenger.of(context)
@@ -82,18 +90,8 @@ class _PostListScreenState extends State<PostListScreen> {
                 return const Center(child: Text('No posts available'));
               },
               itemBuilder: (context, item, index) => _buildPostItem(item),
-              firstPageErrorIndicatorBuilder: (context) => Center(
-                child: Column(
-                  children: [
-                    const Text('Something went wrong. Please try again.'),
-                    CupertinoButton(
-                        child: const Text('Logout'),
-                        onPressed: () {
-                          AuthRepository.deleteToken();
-                          Navigator.pushReplacementNamed(context, '/login');
-                        })
-                  ],
-                ),
+              firstPageErrorIndicatorBuilder: (context) => const Center(
+                child: Text('Something went wrong. Please try again.'),
               ),
               newPageErrorIndicatorBuilder: (context) => const Center(
                 child: Text('Something went wrong. Please try again.'),

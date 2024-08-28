@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 part of 'login_bloc.dart';
 
 abstract class LoginState extends Equatable {
@@ -9,9 +7,10 @@ abstract class LoginState extends Equatable {
 
 class VersionLoaded extends LoginState {
   final String version;
-  
+
   VersionLoaded({required this.version});
 }
+
 
 class LoginInitial extends LoginState {}
 

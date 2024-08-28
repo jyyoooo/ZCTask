@@ -25,6 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginButtonPressed>(_onloginButtonPressed);
     on<SplashLogin>(_onSplashLogin);
     on<GetVersion>(_onGetVersion);
+    on<Logout>(_onLogout);
   }
 
   FutureOr<void> _onloginButtonPressed(
@@ -38,9 +39,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       AuthRepository.storeToken(user.token, user.validity);
       _sessionTimer?.cancel();
       final validity = await AuthRepository.getValidity();
-      _sessionTimer = Timer(Duration(milliseconds: int.parse(validity)), () async {
-        AuthRepository.deleteToken();
-        add(SplashLogin());
+      
+          Timer(Duration(milliseconds: int.parse(validity)), () async {
+        // await AuthRepository.deleteToken();
+        // add(SplashLogin());
+        add(Logout());
       });
     } catch (e) {
       emit(LoginError('Login failed. Please try again.'));
@@ -55,10 +58,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(LoginAuthenticated(token));
       _sessionTimer?.cancel();
       final validity = await AuthRepository.getValidity();
-      _sessionTimer =
+      
           Timer(Duration(milliseconds: int.parse(validity)), () async {
-        AuthRepository.deleteToken();
-        add(SplashLogin());
+        // await AuthRepository.deleteToken();
+        // add(SplashLogin());
+        add(Logout());
       });
     } else {
       emit(LoginUnauthenticated(message: 'Session expired.'));
@@ -76,5 +80,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginInitial());
     final String version = await versionUseCase.getVersion();
     emit(VersionLoaded(version: version));
+  }
+
+  FutureOr<void> _onLogout(LoginEvent event, Emitter<LoginState> emit) async {
+    await AuthRepository.deleteToken();
+    emit(LoginUnauthenticated(message: 'Logged out'));
   }
 }

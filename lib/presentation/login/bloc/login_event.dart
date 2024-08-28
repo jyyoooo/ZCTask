@@ -9,6 +9,8 @@ class SplashLogin extends LoginEvent {}
 
 class GetVersion extends LoginEvent {}
 
+class Logout extends LoginEvent {}
+
 class LoginButtonPressed extends LoginEvent {
   final String email;
   final String password;
